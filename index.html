@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+{% block title %}SoftMada — Logiciel Malagasy{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero {
+        padding: 6rem 0 4rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: -200px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(0,200,83,0.08) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(0,200,83,0.1);
+        border: 1px solid rgba(0,200,83,0.3);
+        color: var(--green);
+        padding: 0.35rem 1rem;
+        border-radius: 100px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        letter-spacing: 0.05em;
+    }
+
+    .hero h1 {
+        font-family: 'Syne', sans-serif;
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.02em;
+    }
+
+    .hero h1 .accent { color: var(--green); }
+
+    .hero p {
+        color: var(--muted);
+        font-size: 1.1rem;
+        max-width: 480px;
+        margin: 0 auto 2.5rem;
+        line-height: 1.7;
+    }
+
+    .hero-cta {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .payment-badges {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .payment-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--dark2);
+        border: 1px solid var(--border);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--muted);
+    }
+
+    .payment-badge .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--green);
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+    }
+
+    /* PRODUCTS */
+    .section-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        padding: 2rem 0 4rem;
+    }
+
+    .product-card {
+        background: var(--dark2);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        transition: transform 0.2s, border-color 0.2s;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .product-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(0,200,83,0.3);
+    }
+
+    .product-image {
+        height: 140px;
+        background: var(--dark3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .product-body {
+        padding: 1.5rem;
+    }
+
+    .product-name {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-desc {
+        color: var(--muted);
+        font-size: 0.875rem;
+        line-height: 1.6;
+        margin-bottom: 1.2rem;
+    }
+
+    .product-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .product-price {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--green);
+    }
+
+    .product-price small {
+        font-size: 0.7rem;
+        color: var(--muted);
+        font-family: 'DM Sans', sans-serif;
+        font-weight: 400;
+    }
+
+    .tag {
+        background: rgba(0,200,83,0.1);
+        color: var(--green);
+        border: 1px solid rgba(0,200,83,0.2);
+        padding: 0.2rem 0.7rem;
+        border-radius: 100px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-badge">
+            <span>🇲🇬</span> Vita Malagasy
+        </div>
+        <h1>Logiciel mahasoa<br>ho an'ny <span class="accent">Malagasy</span></h1>
+        <p>Vidio ny logiciel manoloana mivantana amin'ny Orange Money na Mvola. Mora, haingana, azo antoka.</p>
+        <div class="hero-cta">
+            <a href="#products" class="btn btn-green">Jereo ny logiciel ↓</a>
+            {% if not session.user_id %}
+            <a href="/register" class="btn btn-outline">Misoratra anarana</a>
+            {% endif %}
+        </div>
+        <div class="payment-badges">
+            <div class="payment-badge">
+                <span class="dot"></span>
+                🟠 Orange Money
+            </div>
+            <div class="payment-badge">
+                <span class="dot"></span>
+                🔵 Mvola
+            </div>
+        </div>
+    </section>
+
+    <!-- PRODUCTS -->
+    <section id="products">
+        <h2 class="section-title">Logiciel ___</h2>
+        <div class="products-grid">
+            {% for product in products %}
+            <a href="/product/{{ product.id }}" class="product-card">
+                <div class="product-image">{{ product.image }}</div>
+                <div class="product-body">
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <p class="product-desc">{{ product.description }}</p>
+                    <div class="product-footer">
+                        <div class="product-price">
+                            {{ "{:,.0f}".format(product.price) }} Ar
+                            <small>/midina</small>
+                        </div>
+                        <span class="tag">Ividio</span>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}

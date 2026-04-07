@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="mg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SoftMada{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green: #00C853;
+            --orange: #FF6D00;
+            --dark: #0A0A0A;
+            --dark2: #141414;
+            --dark3: #1E1E1E;
+            --light: #F5F5F5;
+            --muted: #888;
+            --border: rgba(255,255,255,0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--dark);
+            color: var(--light);
+            min-height: 100vh;
+        }
+
+        /* NAV */
+        nav {
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .nav-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: var(--light);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-logo span {
+            color: var(--green);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--light); }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.4rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .btn-green {
+            background: var(--green);
+            color: #000;
+        }
+        .btn-green:hover { background: #00e060; transform: translateY(-1px); }
+
+        .btn-orange {
+            background: var(--orange);
+            color: #fff;
+        }
+        .btn-orange:hover { background: #ff8124; transform: translateY(-1px); }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--light);
+        }
+        .btn-outline:hover { border-color: var(--green); color: var(--green); }
+
+        .btn-ghost {
+            background: var(--dark3);
+            color: var(--light);
+        }
+        .btn-ghost:hover { background: #2a2a2a; }
+
+        /* FLASH MESSAGES */
+        .flash-messages {
+            position: fixed;
+            top: 80px;
+            right: 1.5rem;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .flash {
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+        }
+
+        .flash.success { background: rgba(0,200,83,0.15); border: 1px solid var(--green); color: var(--green); }
+        .flash.error { background: rgba(255,69,58,0.15); border: 1px solid #ff453a; color: #ff453a; }
+
+        @keyframes slideIn {
+            from { transform: translateX(20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* CONTAINER */
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+        /* FOOTER */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin-top: 4rem;
+        }
+
+        footer strong { color: var(--green); }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav>
+        <a href="/" class="nav-logo">Soft<span>Mada</span></a>
+        <ul class="nav-links">
+            <li><a href="/">Accueil</a></li>
+            {% if session.user_id %}
+                <li><a href="/dashboard">Mon compte</a></li>
+                <li><a href="/logout" class="btn btn-outline">Hivoaka</a></li>
+            {% else %}
+                <li><a href="/login">Hiditra</a></li>
+                <li><a href="/register" class="btn btn-green">Misoratra anarana</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+    <footer>
+        <p>© 2024 <strong>SoftMada</strong> — Payment via Orange Money & Mvola 🇲🇬</p>
+    </footer>
+
+    <script>
+        // Auto-hide flash messages
+        setTimeout(() => {
+            document.querySelectorAll('.flash').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transition = 'opacity 0.5s';
+                setTimeout(() => el.remove(), 500);
+            });
+        }, 4000);
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

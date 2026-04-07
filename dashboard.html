@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — SoftMada{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-page { padding: 3rem 0; }
+
+    .welcome {
+        font-family: 'Syne', sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .welcome-sub { color: var(--muted); margin-bottom: 2.5rem; }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+        background: var(--dark2);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.2rem 1.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.78rem;
+        color: var(--muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--green);
+    }
+
+    .section-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .orders-table {
+        background: var(--dark2);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .order-row {
+        display: flex;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        gap: 1rem;
+    }
+
+    .order-row:last-child { border-bottom: none; }
+
+    .order-icon {
+        font-size: 1.8rem;
+        width: 44px;
+        height: 44px;
+        background: var(--dark3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        flex-shrink: 0;
+    }
+
+    .order-info { flex: 1; }
+
+    .order-name {
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .order-meta {
+        font-size: 0.78rem;
+        color: var(--muted);
+    }
+
+    .order-amount {
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--green);
+        text-align: right;
+    }
+
+    .badge {
+        padding: 0.25rem 0.7rem;
+        border-radius: 100px;
+        font-size: 0.72rem;
+        font-weight: 700;
+    }
+
+    .badge-completed { background: rgba(0,200,83,0.1); color: var(--green); }
+    .badge-pending { background: rgba(255,193,7,0.1); color: #ffc107; }
+    .badge-failed { background: rgba(255,69,58,0.1); color: #ff453a; }
+
+    .empty-state {
+        padding: 3rem;
+        text-align: center;
+        color: var(--muted);
+    }
+
+    .empty-state a { color: var(--green); text-decoration: none; font-weight: 600; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="dashboard-page">
+        <h1 class="welcome">Salama, {{ user.name.split()[0] }}! 👋</h1>
+        <p class="welcome-sub">{{ user.email }} · {{ user.phone }}</p>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Fitaovana voavidy</div>
+                <div class="stat-value">{{ orders | selectattr('status', 'eq', 'completed') | list | length }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Vola nandaniana</div>
+                <div class="stat-value">{{ "{:,.0f}".format(orders | selectattr('status', 'eq', 'completed') | sum(attribute='amount')) }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Kaomandy rehetra</div>
+                <div class="stat-value">{{ orders | length }}</div>
+            </div>
+        </div>
+
+        <!-- Orders -->
+        <h2 class="section-title">Ny vidiana nataonao</h2>
+
+        {% if orders %}
+        <div class="orders-table">
+            {% for order in orders %}
+            <div class="order-row">
+                <div class="order-icon">{{ order.product.image }}</div>
+                <div class="order-info">
+                    <div class="order-name">{{ order.product.name }}</div>
+                    <div class="order-meta">
+                        {{ "Orange Money" if order.payment_method == "orange_money" else "Mvola" }} ·
+                        {{ order.created_at.strftime('%d/%m/%Y') }}
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div class="order-amount">{{ "{:,.0f}".format(order.amount) }} Ar</div>
+                    <span class="badge badge-{{ order.status }}">
+                        {% if order.status == 'completed' %}✅ Vita
+                        {% elif order.status == 'pending' %}⏳ Miandry
+                        {% else %}❌ Tsy nety{% endif %}
+                    </span>
+                    {% if order.status == 'completed' %}
+                    <br><a href="/download/{{ order.id }}" style="color: var(--green); font-size: 0.78rem; text-decoration: none;">⬇️ Midina</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="orders-table">
+            <div class="empty-state">
+                <p>Mbola tsy misy vidiana. <a href="/">Manomboka mividy</a> 🚀</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

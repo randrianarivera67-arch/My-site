@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Midina — {{ product.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .download-page {
+        min-height: calc(100vh - 64px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .download-card {
+        background: var(--dark2);
+        border: 1px solid rgba(0,200,83,0.3);
+        border-radius: 20px;
+        padding: 3rem 2.5rem;
+        text-align: center;
+        max-width: 460px;
+        width: 100%;
+    }
+
+    .success-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        animation: bounce 0.5s ease;
+    }
+
+    @keyframes bounce {
+        0% { transform: scale(0); }
+        70% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+
+    .download-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        color: var(--green);
+    }
+
+    .download-sub {
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+
+    .btn-download {
+        width: 100%;
+        justify-content: center;
+        padding: 1rem;
+        font-size: 1rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="download-page">
+    <div class="download-card">
+        <div class="success-icon">🎉</div>
+        <h1 class="download-title">Vita ny fividianana!</h1>
+        <p class="download-sub">
+            Misaotra amin'ny fividianana <strong>{{ product.name }}</strong>.<br>
+            Tsindrio ny bokotra eto ambany mba midina.
+        </p>
+
+        <a href="{{ product.file_url }}" class="btn btn-green btn-download" download>
+            ⬇️ Midina ny {{ product.name }}
+        </a>
+
+        <a href="/dashboard" class="btn btn-ghost btn-download">
+            Hiverina amin'ny dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

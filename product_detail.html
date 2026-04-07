@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} — SoftMada{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detail-page { padding: 3rem 0; max-width: 700px; margin: 0 auto; }
+
+    .breadcrumb {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-bottom: 2rem;
+    }
+
+    .breadcrumb a { color: var(--green); text-decoration: none; }
+
+    .product-hero {
+        display: flex;
+        gap: 2rem;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+    }
+
+    .product-big-icon {
+        font-size: 5rem;
+        background: var(--dark2);
+        border: 1px solid var(--border);
+        width: 120px;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 20px;
+        flex-shrink: 0;
+    }
+
+    .product-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-desc-full {
+        color: var(--muted);
+        line-height: 1.7;
+        margin-bottom: 1rem;
+    }
+
+    .product-price-big {
+        font-family: 'Syne', sans-serif;
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--green);
+        margin-bottom: 1.5rem;
+    }
+
+    .product-price-big small {
+        font-size: 1rem;
+        color: var(--muted);
+        font-family: 'DM Sans', sans-serif;
+        font-weight: 400;
+    }
+
+    .btn-buy {
+        padding: 0.9rem 2.5rem;
+        font-size: 1rem;
+        border-radius: 12px;
+    }
+
+    .features {
+        background: var(--dark2);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .features h3 {
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        padding: 0.5rem 0;
+        font-size: 0.9rem;
+        color: var(--muted);
+    }
+
+    .feature-item::before { content: '✓'; color: var(--green); font-weight: 700; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="detail-page">
+        <div class="breadcrumb">
+            <a href="/">Accueil</a> → {{ product.name }}
+        </div>
+
+        <div class="product-hero">
+            <div class="product-big-icon">{{ product.image }}</div>
+            <div>
+                <h1 class="product-title">{{ product.name }}</h1>
+                <p class="product-desc-full">{{ product.description }}</p>
+            </div>
+        </div>
+
+        <div class="product-price-big">
+            {{ "{:,.0f}".format(product.price) }} Ar
+            <small>/ midina tokana</small>
+        </div>
+
+        <a href="/checkout/{{ product.id }}" class="btn btn-green btn-buy">
+            🛒 Ividio izao
+        </a>
+
+        <div class="features">
+            <h3>Ahoana no ahazoana azy</h3>
+            <div class="feature-item">Aloa amin'ny Orange Money na Mvola</div>
+            <div class="feature-item">Ahazo midina avy hatrany rehefa vita ny payment</div>
+            <div class="feature-item">Midina foana amin'ny dashboard anao</div>
+            <div class="feature-item">Fanamarinana amin'ny 5 segondra</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

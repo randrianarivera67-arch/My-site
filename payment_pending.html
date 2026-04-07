@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% block title %}Miandry ny payment…{% endblock %}
+
+{% block extra_css %}
+<style>
+    .pending-page {
+        min-height: calc(100vh - 64px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .pending-card {
+        background: var(--dark2);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 3rem 2.5rem;
+        text-align: center;
+        max-width: 460px;
+        width: 100%;
+    }
+
+    .spinner-wrap {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+    }
+
+    .spinner {
+        width: 80px;
+        height: 80px;
+        border: 3px solid var(--border);
+        border-top: 3px solid var(--green);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    .spinner-icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.8rem;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .pending-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin-bottom: 0.75rem;
+    }
+
+    .pending-text {
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+    }
+
+    .info-box {
+        background: var(--dark3);
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        margin-bottom: 1.5rem;
+        text-align: left;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.875rem;
+        padding: 0.3rem 0;
+    }
+
+    .info-row .label { color: var(--muted); }
+    .info-row .value { font-weight: 600; }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.3rem 0.8rem;
+        border-radius: 100px;
+        font-size: 0.78rem;
+        font-weight: 700;
+    }
+
+    .status-pending {
+        background: rgba(255,193,7,0.1);
+        border: 1px solid rgba(255,193,7,0.3);
+        color: #ffc107;
+    }
+
+    .status-completed {
+        background: rgba(0,200,83,0.1);
+        border: 1px solid rgba(0,200,83,0.3);
+        color: var(--green);
+    }
+
+    .status-failed {
+        background: rgba(255,69,58,0.1);
+        border: 1px solid rgba(255,69,58,0.3);
+        color: #ff453a;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pending-page">
+    <div class="pending-card" id="pending-card">
+        <div class="spinner-wrap">
+            <div class="spinner"></div>
+            <div class="spinner-icon">
+                {% if order.payment_method == 'orange_money' %}🟠{% else %}🔵{% endif %}
+            </div>
+        </div>
+
+        <h1 class="pending-title">Miandry ny fanamarinana…</h1>
+        <p class="pending-text">
+            Nandefa fangatahana payment aho.<br>
+            Jereo ny finday anao ary ekeo ny transaction.
+        </p>
+
+        <div class="info-box">
+            <div class="info-row">
+                <span class="label">Logiciel</span>
+                <span class="value">{{ product.name }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Vola</span>
+                <span class="value">{{ "{:,.0f}".format(order.amount) }} Ar</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Fomba</span>
+                <span class="value">{{ "Orange Money" if order.payment_method == "orange_money" else "Mvola" }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Laharana</span>
+                <span class="value">{{ order.phone }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Status</span>
+                <span class="value">
+                    <span class="status-badge status-pending" id="status-badge">
+                        ⏳ Miandry
+                    </span>
+                </span>
+            </div>
+        </div>
+
+        <div id="action-area">
+            <p style="color: var(--muted); font-size: 0.8rem;">Manamarina amin'ny 5 segondra…</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const orderId = {{ order.id }};
+    let attempts = 0;
+    const maxAttempts = 24; // 2 minitra
+
+    function checkStatus() {
+        fetch(`/payment/check/${orderId}`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'completed') {
+                    document.getElementById('status-badge').className = 'status-badge status-completed';
+                    document.getElementById('status-badge').innerHTML = '✅ Vita!';
+                    document.querySelector('.spinner').style.borderTopColor = '#00C853';
+                    document.getElementById('action-area').innerHTML = `
+                        <a href="${data.download_url}" class="btn btn-green" style="width:100%;justify-content:center;padding:0.9rem;border-radius:12px;font-size:1rem;text-decoration:none;">
+                            ⬇️ Midina ny logiciel
+                        </a>`;
+                } else if (data.status === 'failed') {
+                    document.getElementById('status-badge').className = 'status-badge status-failed';
+                    document.getElementById('status-badge').innerHTML = '❌ Tsy nety';
+                    document.getElementById('action-area').innerHTML = `
+                        <a href="/checkout/{{ order.product_id }}" class="btn btn-outline" style="width:100%;justify-content:center;padding:0.9rem;border-radius:12px;font-size:1rem;text-decoration:none;">
+                            🔄 Andramo indray
+                        </a>`;
+                } else {
+                    attempts++;
+                    if (attempts < maxAttempts) {
+                        document.getElementById('action-area').innerHTML = `
+                            <p style="color: var(--muted); font-size: 0.8rem;">Manamarina… (${attempts}/${maxAttempts})</p>`;
+                        setTimeout(checkStatus, 5000);
+                    } else {
+                        document.getElementById('action-area').innerHTML = `
+                            <p style="color: var(--muted); font-size: 0.85rem; margin-bottom: 1rem;">Nandany fotoana loatra. Jereo ny dashboard anao.</p>
+                            <a href="/dashboard" class="btn btn-ghost" style="width:100%;justify-content:center;border-radius:12px;">
+                                Hiverina amin'ny dashboard
+                            </a>`;
+                    }
+                }
+            })
+            .catch(() => {
+                attempts++;
+                if (attempts < maxAttempts) setTimeout(checkStatus, 5000);
+            });
+    }
+
+    setTimeout(checkStatus, 5000);
+</script>
+{% endblock %}
